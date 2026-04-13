@@ -6,9 +6,11 @@ A microservices-based banking platform built with Python (FastAPI), Java (Spring
 
 ## Architecture Overview
 
-> **Interactive diagram:** [View the animated architecture](https://techbleat.co.uk/wp-content/uploads/2026/04/animated_techbleat_architecture.html)
+<iframe src="architectural-diagram.html" width="100%" height="520" frameborder="0" style="border:none;border-radius:8px;"></iframe>
 
-<iframe src="https://techbleat.co.uk/wp-content/uploads/2026/04/animated_techbleat_architecture.html" width="100%" height="500" frameborder="0" allowfullscreen></iframe>
+> **Note:** The interactive diagram above renders in local viewers (VS Code preview, etc.). On GitHub, iframes are blocked — use the static image below instead.
+
+![Architecture Diagram](architectural-diagram.png)
 
 ```
                          ┌──────────────────┐

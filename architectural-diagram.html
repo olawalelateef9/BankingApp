@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Techbleat Global Bank – Architecture</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d1117;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    .wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+      padding: 16px;
+    }
+
+    /* Diagram image fades in and scales up on load */
+    .diagram {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 0 40px rgba(88, 166, 255, 0.25);
+      animation: fadeIn 1.2s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* Animated scan-line that sweeps across the diagram */
+    .scan-line {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      height: 3px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(88, 166, 255, 0.0) 10%,
+        rgba(88, 166, 255, 0.8) 50%,
+        rgba(88, 166, 255, 0.0) 90%,
+        transparent 100%);
+      border-radius: 2px;
+      animation: scan 4s ease-in-out infinite;
+      animation-delay: 1.4s;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      0%   { top: 16px;   opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { top: calc(100% - 16px); opacity: 0; }
+    }
+
+    /* Pulsing border glow on the diagram container */
+    .frame {
+      position: relative;
+      border-radius: 8px;
+      animation: glow 3s ease-in-out infinite alternate;
+      animation-delay: 1.2s;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 20px rgba(88, 166, 255, 0.15); }
+      to   { box-shadow: 0 0 45px rgba(88, 166, 255, 0.45); }
+    }
+
+    /* Floating data-flow dots (pure CSS, no JS) */
+    .dot {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(88, 166, 255, 0.85);
+      box-shadow: 0 0 8px rgba(88, 166, 255, 0.9);
+      animation: floatDot linear infinite;
+      pointer-events: none;
+    }
+
+    .dot:nth-child(1) { left: 25%;  animation-duration: 3.2s; animation-delay: 1.5s; }
+    .dot:nth-child(2) { left: 50%;  animation-duration: 2.8s; animation-delay: 2.1s; }
+    .dot:nth-child(3) { left: 75%;  animation-duration: 3.6s; animation-delay: 1.0s; }
+    .dot:nth-child(4) { left: 38%;  animation-duration: 2.5s; animation-delay: 2.8s; }
+    .dot:nth-child(5) { left: 62%;  animation-duration: 3.9s; animation-delay: 0.5s; }
+
+    @keyframes floatDot {
+      0%   { top: 5%;  opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { top: 95%; opacity: 0; }
+    }
+
+    /* Label strip */
+    .label {
+      text-align: center;
+      color: rgba(88, 166, 255, 0.7);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 10px;
+      animation: fadeIn 2s ease forwards;
+      opacity: 0;
+      animation-delay: 1.8s;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="frame">
+      <img
+        class="diagram"
+        src="architectural-diagram.png"
+        alt="Techbleat Global Bank – Architecture Diagram"
+        draggable="false"
+      />
+      <div class="scan-line"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    <p class="label">Techbleat Global Bank &mdash; Service Architecture</p>
+  </div>
+</body>
+</html>
