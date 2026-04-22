@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: banking
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: olawale9/bank-frontend:1.0 
+        ports:
+        - containerPort: 80 # Updated: Nginx listens on 80 by default
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: banking
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 3000      # Internal Cluster port
+      targetPort: 80  # Updated: Points to Nginx on 80
+  type: ClusterIP
