@@ -25,13 +25,23 @@ spec:
               name: db-credentials
               key: database-url
         - name: KAFKA_BOOTSTRAP_SERVERS
-          value: "kafka-service:9092" # We will create this service next
+          value: "kafka-service:9092"
         resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
           limits:
             memory: "256Mi"
-            cpu: "500m"
+            cpu: "300m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 10
+          periodSeconds: 10
         livenessProbe:
           httpGet:
             path: /health
             port: 8001
-          initialDelaySeconds: 15
+          initialDelaySeconds: 20
+          periodSeconds: 20

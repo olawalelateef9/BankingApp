@@ -4,7 +4,7 @@ metadata:
   name: transaction-service
   namespace: banking
 spec:
-  replicas: 1
+  replicas: 2 # Increased to 2 as per HPA minReplicas requirement
   selector:
     matchLabels:
       app: transaction-service
@@ -18,6 +18,27 @@ spec:
         image: olawale9/transaction-service:1.0 
         ports:
         - containerPort: 8080
+        #  Resource Limits (Objective #5) 
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        #  Health Probes (Objective #6) 
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 20
         env:
         - name: SPRING_DATASOURCE_URL
           value: "jdbc:postgresql://postgres-service:5432/bankingdb"
@@ -52,3 +73,24 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+---
+#  Horizontal Pod Autoscaler (Objective #7)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: transaction-hpa
+  namespace: banking
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: transaction-service
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
