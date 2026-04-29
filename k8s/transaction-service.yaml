@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: transaction-service
-        image: olawale9/transaction-service:1.0 
+        image: olawale9/transaction-service:1.1 
         ports:
         - containerPort: 8080
         #  Resource Limits (Objective #5) 
