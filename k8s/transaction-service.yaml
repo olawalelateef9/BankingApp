@@ -17,8 +17,9 @@ spec:
       - name: transaction-service
         image: olawale9/transaction-service:1.1 
         ports:
-        - containerPort: 8080
-        #  Resource Limits (Objective #5) 
+        - name: http           # Critical for ServiceMonitor
+          containerPort: 8080
+        # Resource Limits (Objective #5) 
         resources:
           requests:
             cpu: "200m"
@@ -26,7 +27,7 @@ spec:
           limits:
             cpu: "500m"
             memory: "512Mi"
-        #  Health Probes (Objective #6) 
+        # Health Probes (Objective #6) 
         readinessProbe:
           httpGet:
             path: /health
@@ -66,15 +67,18 @@ kind: Service
 metadata:
   name: transaction-service
   namespace: banking
+  labels:                      # Critical for Prometheus Discovery
+    app: transaction-service
 spec:
   selector:
     app: transaction-service
   ports:
-    - protocol: TCP
+    - name: http               # Critical: Matches the ServiceMonitor endpoint
+      protocol: TCP
       port: 8080
       targetPort: 8080
 ---
-#  Horizontal Pod Autoscaler (Objective #7)
+# Horizontal Pod Autoscaler (Objective #7)
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
