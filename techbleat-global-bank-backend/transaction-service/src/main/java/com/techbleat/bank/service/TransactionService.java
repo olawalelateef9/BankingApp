@@ -4,6 +4,8 @@ import com.techbleat.bank.model.Account;
 import com.techbleat.bank.model.BankTransaction;
 import com.techbleat.bank.repo.AccountRepository;
 import com.techbleat.bank.repo.BankTransactionRepository;
+import io.micrometer.core.instrument.Counter; // Added for Metrics
+import io.micrometer.core.instrument.MeterRegistry; // Added for Metrics
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ public class TransactionService {
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
 
+    @Autowired
+    private MeterRegistry meterRegistry; // Added for Metrics
+
     private final String redisHost = System.getenv().getOrDefault("REDIS_HOST", "redis");
     private final int redisPort = Integer.parseInt(System.getenv().getOrDefault("REDIS_PORT", "6379"));
 
@@ -39,6 +44,9 @@ public class TransactionService {
         saveTransaction(userId, "DEPOSIT", amount, "cash deposit");
         publishEvent(userId, "DEPOSIT", amount);
         cacheBalance(userId, account.getBalance());
+        
+        // Metrics: Increment the transaction counter
+        recordTransactionMetric("DEPOSIT");
 
         return Map.of("message", "Deposit successful", "balance", account.getBalance());
     }
@@ -57,6 +65,9 @@ public class TransactionService {
         saveTransaction(userId, "WITHDRAW", amount, "cash withdrawal");
         publishEvent(userId, "WITHDRAW", amount);
         cacheBalance(userId, account.getBalance());
+        
+        // Metrics: Increment the transaction counter
+        recordTransactionMetric("WITHDRAW");
 
         return Map.of("message", "Withdrawal successful", "balance", account.getBalance());
     }
@@ -85,12 +96,24 @@ public class TransactionService {
 
         cacheBalance(fromUserId, fromAccount.getBalance());
         cacheBalance(toUserId, toAccount.getBalance());
+        
+        // Metrics: Increment the transaction counter
+        recordTransactionMetric("TRANSFER");
 
         return Map.of(
                 "message", "Transfer successful",
                 "fromBalance", fromAccount.getBalance(),
                 "toBalance", toAccount.getBalance()
         );
+    }
+
+    // New helper method for Micrometer Metrics
+    private void recordTransactionMetric(String type) {
+        Counter.builder("banking_transactions_total")
+               .tag("type", type)
+               .description("Total number of banking transactions")
+               .register(meterRegistry)
+               .increment();
     }
 
     public Double getBalance(String userId) {
