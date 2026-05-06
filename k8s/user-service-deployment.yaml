@@ -4,7 +4,7 @@ metadata:
   name: user-service
   namespace: banking
 spec:
-  replicas: 2 # Running two pods so if one crashes, the other stays up!
+  replicas: 3
   selector:
     matchLabels:
       app: user-service
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: user-service
-        image: olawale9/user-service:1.0 # Use the image you pushed to Docker Hub
+        image: olawale9/user-service:1.0
         ports:
         - containerPort: 8000
         env:
@@ -27,13 +27,19 @@ spec:
         resources:
           requests:
             memory: "128Mi"
-            cpu: "250m"
+            cpu: "100m"
           limits:
             memory: "256Mi"
-            cpu: "500m"
+            cpu: "300m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
         livenessProbe:
           httpGet:
             path: /health
             port: 8000
-          initialDelaySeconds: 10
-          periodSeconds: 30
+          initialDelaySeconds: 15
+          periodSeconds: 20
