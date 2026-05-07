@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: transaction-service
-        image: olawale9/transaction-service:1.1 
+        image: olawale9/transaction-service:1.2 
         ports:
         - name: http           # Critical for ServiceMonitor
           containerPort: 8080
