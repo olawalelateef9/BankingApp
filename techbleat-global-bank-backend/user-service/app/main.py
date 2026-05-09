@@ -1,9 +1,10 @@
 import os
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine, text
+# New imports for Prometheus
+from prometheus_client import Counter, make_asgi_app
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
@@ -15,6 +16,13 @@ engine = create_engine(f"postgresql+psycopg2://{DATABASE_URL.split('://', 1)[1]}
 
 app = FastAPI(title="Techbleat Global Bank - User Service")
 
+# 1. Define the Prometheus Counter
+# This matches the metric name expected by your Grafana dashboard
+REGISTERED_USERS_COUNTER = Counter(
+    'banking_users_registered_total', 
+    'Total number of registered users'
+)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[FRONTEND_ORIGIN, "http://127.0.0.1:3000"],
@@ -22,6 +30,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 2. Expose the /metrics endpoint for Prometheus to scrape
+metrics_app = make_asgi_app()
+app.mount("/metrics", metrics_app)
 
 
 class UserCreate(BaseModel):
@@ -65,6 +77,9 @@ def create_user(user: UserCreate):
             ),
             {"user_id": user.id},
         )
+        
+        # 3. Increment the counter after successful database insertion
+        REGISTERED_USERS_COUNTER.inc()
 
     return {"message": "User created successfully", "user_id": user.id}
 
