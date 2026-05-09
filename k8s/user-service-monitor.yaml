@@ -4,15 +4,16 @@ metadata:
   name: user-service-monitor
   namespace: banking
   labels:
-    release: prometheus # This label connects it to your Prometheus installation
+    # CHANGED: This now matches your kubectl output
+    release: monitoring 
 spec:
   selector:
     matchLabels:
-      app: user-service # This tells it to look for your user-service
+      app: user-service
   namespaceSelector:
     matchNames:
       - banking
   endpoints:
-  - port: http # This matches the name we gave the port in the Service above
+  - port: http
     path: /metrics
     interval: 15s
