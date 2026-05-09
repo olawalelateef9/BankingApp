@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: user-service-monitor
+  namespace: banking
+  labels:
+    release: prometheus # This label connects it to your Prometheus installation
+spec:
+  selector:
+    matchLabels:
+      app: user-service # This tells it to look for your user-service
+  namespaceSelector:
+    matchNames:
+      - banking
+  endpoints:
+  - port: http # This matches the name we gave the port in the Service above
+    path: /metrics
+    interval: 15s

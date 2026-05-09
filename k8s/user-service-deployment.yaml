@@ -50,8 +50,7 @@ metadata:
   name: user-service
   namespace: banking
   labels:
-    app: user-service
-  # These annotations are the "secret sauce" that tell Prometheus to scrape this service
+    app: user-service  # This label is critical for the ServiceMonitor to find it
   annotations:
     prometheus.io/scrape: "true"
     prometheus.io/path: "/metrics"
@@ -60,7 +59,7 @@ spec:
   selector:
     app: user-service
   ports:
-    - name: http
+    - name: http  # Named 'http' so the ServiceMonitor can find it
       protocol: TCP
       port: 8000
       targetPort: 8000
