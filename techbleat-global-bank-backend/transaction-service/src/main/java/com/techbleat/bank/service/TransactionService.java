@@ -5,10 +5,13 @@ import com.techbleat.bank.model.BankTransaction;
 import com.techbleat.bank.repo.AccountRepository;
 import com.techbleat.bank.repo.BankTransactionRepository;
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge; // Added for Active Sessions
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer; // Added for Latency
+import io.micrometer.core.instrument.Timer;
+import jakarta.annotation.PostConstruct; // Added for Metric Initialization
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled; // Added for 5-min cleanup
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 
@@ -16,6 +19,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -33,11 +38,33 @@ public class TransactionService {
     @Autowired
     private MeterRegistry meterRegistry;
 
+    // Tracker for unique active users in the last 5 minutes
+    private final Set<String> activeUsers = ConcurrentHashMap.newKeySet();
+
     private final String redisHost = System.getenv().getOrDefault("REDIS_HOST", "redis");
     private final int redisPort = Integer.parseInt(System.getenv().getOrDefault("REDIS_PORT", "6379"));
 
+    /**
+     * Initializes the Active Sessions Gauge.
+     */
+    @PostConstruct
+    public void init() {
+        Gauge.builder("banking_active_sessions", activeUsers, Set::size)
+                .description("Users with activity in the last 5 minutes")
+                .register(meterRegistry);
+    }
+
+    /**
+     * Clears the active session set every 5 minutes to meet the requirement.
+     */
+    @Scheduled(fixedRate = 300000) // 300,000ms = 5 minutes
+    public void clearActiveSessions() {
+        activeUsers.clear();
+    }
+
     public Map<String, Object> deposit(String userId, Double amount) {
-        long startTime = System.nanoTime(); // Start Latency Timer
+        long startTime = System.nanoTime();
+        activeUsers.add(userId); // Track activity
         try {
             validateAmount(amount);
             Account account = getAccount(userId);
@@ -49,13 +76,11 @@ public class TransactionService {
             publishEvent(userId, "DEPOSIT", amount);
             cacheBalance(userId, account.getBalance());
             
-            // Metrics: Record Success + Amount
             recordTransactionMetrics("DEPOSIT", amount, "SUCCESS");
             recordLatency("deposit", startTime);
 
             return Map.of("message", "Deposit successful", "balance", account.getBalance());
         } catch (Exception e) {
-            // Metrics: Record Failure
             recordTransactionMetrics("DEPOSIT", amount, "FAILURE");
             throw e;
         }
@@ -63,12 +88,13 @@ public class TransactionService {
 
     public Map<String, Object> withdraw(String userId, Double amount) {
         long startTime = System.nanoTime();
+        activeUsers.add(userId); // Track activity
         try {
             validateAmount(amount);
             Account account = getAccount(userId);
 
             if (account.getBalance() < amount) {
-                recordTransactionMetrics("WITHDRAW", amount, "FAILURE"); // Specific failure
+                recordTransactionMetrics("WITHDRAW", amount, "FAILURE");
                 throw new RuntimeException("Insufficient funds");
             }
 
@@ -93,6 +119,7 @@ public class TransactionService {
 
     public Map<String, Object> transfer(String fromUserId, String toUserId, Double amount, String reference) {
         long startTime = System.nanoTime();
+        activeUsers.add(fromUserId); // Track activity
         try {
             validateAmount(amount);
 
@@ -133,18 +160,13 @@ public class TransactionService {
         }
     }
 
-    /**
-     * Records both transaction count (with status) and total monetary value.
-     */
     private void recordTransactionMetrics(String type, Double amount, String status) {
-        // Metric 1: Count of transactions (Status: SUCCESS/FAILURE)
         Counter.builder("banking_transactions_total")
                 .tag("type", type)
                 .tag("status", status)
                 .register(meterRegistry)
                 .increment();
 
-        // Metric 2: Monetary value (Only track for success)
         if ("SUCCESS".equals(status) && amount != null) {
             Counter.builder("banking_transaction_value_total")
                     .tag("type", type)
@@ -153,9 +175,6 @@ public class TransactionService {
         }
     }
 
-    /**
-     * Records how long the operation took.
-     */
     private void recordLatency(String operation, long startTime) {
         long duration = System.nanoTime() - startTime;
         Timer.builder("banking_transaction_duration_seconds")
@@ -164,15 +183,14 @@ public class TransactionService {
                 .record(duration, TimeUnit.NANOSECONDS);
     }
 
-    // ... Rest of your existing balance and private methods (getAccount, validateAmount, etc.) remain the same ...
     public Double getBalance(String userId) {
+        activeUsers.add(userId); // Even checking balance counts as activity
         try (Jedis jedis = new Jedis(redisHost, redisPort)) {
             String value = jedis.get("balance:" + userId);
             if (value != null) {
                 return Double.parseDouble(value);
             }
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
 
         Account account = getAccount(userId);
         cacheBalance(userId, account.getBalance());
@@ -180,6 +198,7 @@ public class TransactionService {
     }
 
     public List<BankTransaction> getTransactions(String userId) {
+        activeUsers.add(userId); // View statement counts as activity
         return transactionRepository.findByUserIdOrderByCreatedAtDesc(userId);
     }
 
@@ -216,7 +235,6 @@ public class TransactionService {
     private void cacheBalance(String userId, Double balance) {
         try (Jedis jedis = new Jedis(redisHost, redisPort)) {
             jedis.set("balance:" + userId, String.valueOf(balance));
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
     }
 }
