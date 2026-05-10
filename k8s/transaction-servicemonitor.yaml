@@ -6,12 +6,12 @@ metadata:
   labels:
     release: monitoring
 spec:
+  # CHANGED: 'any: true' is more reliable than 'matchNames' in Docker Desktop
+  namespaceSelector:
+    any: true 
   selector:
     matchLabels:
-      app: transaction-service # MUST match the label in your transaction-service-deployment.yaml
-  namespaceSelector:
-    matchNames:
-      - banking
+      app: transaction-service
   endpoints:
   - port: http
     path: /actuator/prometheus

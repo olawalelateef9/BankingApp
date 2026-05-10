@@ -1,0 +1,11 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-all-ingress-banking
+  namespace: banking
+spec:
+  podSelector: {} # Empty selector = ALL pods in the namespace
+  policyTypes:
+  - Ingress
+  ingress:
+  - from: [] # Empty from = ALL sources (including monitoring namespace)

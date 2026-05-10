@@ -3,11 +3,14 @@ kind: Service
 metadata:
   name: user-service
   namespace: banking
+  labels:
+    app: user-service
 spec:
+  type: ClusterIP
   selector:
     app: user-service
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 8000
       targetPort: 8000
-  type: ClusterIP

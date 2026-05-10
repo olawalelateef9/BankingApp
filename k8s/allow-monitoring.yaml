@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-prometheus-to-user-service
+  namespace: banking # This policy lives where the target is
+spec:
+  podSelector:
+    matchLabels:
+      app: user-service # Apply this rule to your user-service pods
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          # This is the standard label for the monitoring namespace
+          kubernetes.io/metadata.name: monitoring 
+    ports:
+    - protocol: TCP
+      port: 8000 # The port your FastAPI app is listening on

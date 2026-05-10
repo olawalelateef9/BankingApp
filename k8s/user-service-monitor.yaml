@@ -2,18 +2,16 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: user-service-monitor
-  namespace: banking
+  namespace: monitoring
   labels:
-    # CHANGED: This now matches your kubectl output
     release: monitoring 
 spec:
+  namespaceSelector:
+    any: true 
   selector:
     matchLabels:
       app: user-service
-  namespaceSelector:
-    matchNames:
-      - banking
   endpoints:
   - port: http
-    path: /metrics
+    path: /metrics    # Python standard
     interval: 15s
