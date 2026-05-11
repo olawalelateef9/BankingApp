@@ -63,6 +63,11 @@ spec:
         # Required for Prometheus to work with Spring Boot Actuator
         - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
           value: "health,prometheus,info"
+        # --- NEW UPDATES FOR P95/P99 METRICS ---
+        - name: MANAGEMENT_METRICS_DISTRIBUTION_PERCENTILES_HISTOGRAM_HTTP_SERVER_REQUESTS
+          value: "true"
+        - name: MANAGEMENT_METRICS_DISTRIBUTION_SLA_HTTP_SERVER_REQUESTS
+          value: "100ms,500ms,1s,2s"
 ---
 apiVersion: v1
 kind: Service
