@@ -62,9 +62,10 @@ spec:
             # Expose health / prometheus / info for Spring Boot Actuator
             - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
               value: "health,prometheus,info"
-            # P95 / P99 metrics via histograms
-            - name: MANAGEMENT_METRICS_DISTRIBUTION_PERCENTILES_HISTOGRAM_HTTP_SERVER_REQUESTS
+            # Enable p95 / p99 metrics via percentiles
+            - name: MANAGEMENT_METRICS_DISTRIBUTION_PERCENTILES_HTTP_SERVER_REQUESTS
               value: "0.95,0.99"
+            # SLA buckets (optional)
             - name: MANAGEMENT_METRICS_DISTRIBUTION_SLA_HTTP_SERVER_REQUESTS
               value: "100ms,500ms,1s,2s"
 ---
@@ -75,7 +76,7 @@ metadata:
   namespace: banking
   labels:
     app: transaction-service
-    prometheus-monitoring: "true"      # allows selecting all monitored services
+    prometheus-monitoring: "true"
 spec:
   selector:
     app: transaction-service
