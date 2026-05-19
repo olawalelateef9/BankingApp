@@ -5,6 +5,11 @@ metadata:
   namespace: banking
   labels:
     app: user-service
+    prometheus-monitoring: "true"
+  annotations:
+    prometheus.io/scrape: "true"  # useful for plain Prometheus; Operator will use ServiceMonitor
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "8000"
 spec:
   type: ClusterIP
   selector:

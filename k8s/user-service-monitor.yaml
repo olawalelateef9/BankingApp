@@ -4,14 +4,14 @@ metadata:
   name: user-service-monitor
   namespace: monitoring
   labels:
-    release: monitoring 
+    release: kps                  # MUST match your kube-prometheus-stack release name
 spec:
   namespaceSelector:
-    any: true 
+    any: true                     # or use matchNames: [banking] if you prefer
   selector:
     matchLabels:
-      app: user-service
+      app: user-service           # matches the Service label
   endpoints:
-  - port: http
-    path: /metrics    # Python standard
-    interval: 15s
+    - port: http                  # matches Service port name "http"
+      path: /metrics              # your FastAPI / Python metrics endpoint
+      interval: 15s
