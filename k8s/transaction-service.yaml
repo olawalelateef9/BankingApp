@@ -64,7 +64,7 @@ spec:
               value: "health,prometheus,info"
             # P95 / P99 metrics via histograms
             - name: MANAGEMENT_METRICS_DISTRIBUTION_PERCENTILES_HISTOGRAM_HTTP_SERVER_REQUESTS
-              value: "true"
+              value: "0.95,0.99"
             - name: MANAGEMENT_METRICS_DISTRIBUTION_SLA_HTTP_SERVER_REQUESTS
               value: "100ms,500ms,1s,2s"
 ---
