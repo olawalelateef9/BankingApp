@@ -13,5 +13,5 @@ spec:
       app: user-service           # matches the Service label
   endpoints:
     - port: http                  # matches Service port name "http"
-      path: /metrics              # your FastAPI / Python metrics endpoint
+      path: /actuator/prometheus    # your FastAPI / Python metrics endpoint
       interval: 15s
