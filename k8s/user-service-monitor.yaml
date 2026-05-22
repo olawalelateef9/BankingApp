@@ -4,7 +4,7 @@ metadata:
   name: user-service-monitor
   namespace: monitoring
   labels:
-    release: kps
+    release: monitoring
 spec:
   namespaceSelector:
     any: true

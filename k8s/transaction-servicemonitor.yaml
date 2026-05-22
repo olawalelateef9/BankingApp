@@ -4,7 +4,7 @@ metadata:
   name: transaction-service-monitor
   namespace: monitoring
   labels:
-    release: kps                    # MUST match kube-prometheus-stack release name
+    release: monitoring                    # MUST match kube-prometheus-stack release name
 spec:
   namespaceSelector:
     any: true                       # fine for Docker Desktop; will find services in 'banking'
