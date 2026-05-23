@@ -1,0 +1,57 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: banking-rules
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+  - name: banking.rules
+    rules:
+    # Transaction rate per second by type
+    - record: banking:transaction_rate:by_type
+      expr: rate(banking_transactions_total[1m])
+
+    # HTTP 5xx error rate per service
+    - record: banking:http_error_rate:5xx
+      expr: |
+        rate(http_server_requests_seconds_count{status=~"5.."}[5m])
+        /
+        rate(http_server_requests_seconds_count[5m])
+
+    # P95 request latency per service
+    - record: banking:request_latency_p95
+      expr: |
+        histogram_quantile(0.95,
+          rate(http_server_requests_seconds_bucket[5m])
+        )
+
+    # P99 request latency per service
+    - record: banking:request_latency_p99
+      expr: |
+        histogram_quantile(0.99,
+          rate(http_server_requests_seconds_bucket[5m])
+        )
+
+    # Kafka consumer lag on banking-transactions topic
+    - record: banking:kafka_consumer_lag
+      expr: |
+        kafka_consumergroup_lag{topic="banking-transactions"}
+
+    # Redis cache hit rate
+    - record: banking:redis_cache_hit_rate
+      expr: |
+        rate(redis_keyspace_hits_total[5m])
+        /
+        (rate(redis_keyspace_hits_total[5m]) + rate(redis_keyspace_misses_total[5m]))
+
+    # PostgreSQL active connections
+    - record: banking:postgres_active_connections
+      expr: |
+        sum(pg_stat_activity_count{datname="bankingdb", state="active"})
+
+    # PostgreSQL query duration
+    - record: banking:postgres_query_duration
+      expr: |
+        rate(pg_stat_activity_count{datname="bankingdb"}[5m])
