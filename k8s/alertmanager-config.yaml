@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: banking-alertmanager-config
+  namespace: monitoring
+  labels:
+    alertmanagerConfig: banking
+spec:
+  route:
+    receiver: slack-notifications
+    groupBy: ['alertname', 'severity']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    routes:
+    - receiver: slack-notifications
+      matchers:
+      - name: severity
+        value: critical
+    - receiver: slack-notifications
+      matchers:
+      - name: severity
+        value: warning
+  receivers:
+  - name: slack-notifications
+    slackConfigs:
+    - apiURL:
+        key: slack-webhook-url
+        name: alertmanager-slack-secret
+      channel: '#banking-alerts'
+      sendResolved: true
+      title: '[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }}'
+      text: |
+        {{ range .Alerts }}
+        *Alert:* {{ .Annotations.summary }}
+        *Description:* {{ .Annotations.description }}
+        *Severity:* {{ .Labels.severity }}
+        *Namespace:* {{ .Labels.namespace }}
+        {{ end }}
