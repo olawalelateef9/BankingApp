@@ -55,3 +55,87 @@ spec:
     - record: banking:postgres_query_duration
       expr: |
         rate(pg_stat_activity_count{datname="bankingdb"}[5m])
+
+  - name: banking.alerts
+    rules:
+    # High Error Rate
+    - alert: HighErrorRate
+      expr: |
+        rate(http_server_requests_seconds_count{status=~"5.."}[5m])
+        /
+        rate(http_server_requests_seconds_count[5m]) > 0.05
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High error rate on {{ $labels.application }}"
+        description: "HTTP 5xx error rate is {{ $value | humanizePercentage }} on {{ $labels.application }}"
+
+    # Slow Transactions
+    - alert: SlowTransactions
+      expr: |
+        histogram_quantile(0.95,
+          rate(http_server_requests_seconds_bucket[5m])
+        ) > 2
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Slow transactions on {{ $labels.application }}"
+        description: "P95 latency is {{ $value }}s on {{ $labels.application }}"
+
+    # Kafka Consumer Lag
+    - alert: KafkaConsumerLag
+      expr: kafka_consumergroup_lag{topic="banking-transactions"} > 100
+      for: 3m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Kafka consumer lag is high"
+        description: "Consumer lag is {{ $value }} on topic {{ $labels.topic }}"
+
+    # Pod CrashLooping
+    - alert: PodCrashLooping
+      expr: rate(kube_pod_container_status_restarts_total[10m]) * 600 > 3
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Pod {{ $labels.pod }} is crash looping"
+        description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is restarting frequently"
+
+    # Low Disk on Postgres
+    - alert: LowDiskOnPostgres
+      expr: |
+        kubelet_volume_stats_used_bytes{persistentvolumeclaim=~"postgres.*"}
+        /
+        kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~"postgres.*"} > 0.8
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "PostgreSQL PVC usage is high"
+        description: "PVC {{ $labels.persistentvolumeclaim }} is {{ $value | humanizePercentage }} full"
+
+    # Service Down
+    - alert: ServiceDown
+      expr: up{job=~"user-service|transaction-service"} == 0
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Service {{ $labels.job }} is down"
+        description: "Service {{ $labels.job }} has been down for more than 2 minutes"
+
+    # HPA Max Replicas Reached
+    - alert: HPAMaxReplicasReached
+      expr: |
+        kube_horizontalpodautoscaler_status_current_replicas{horizontalpodautoscaler="transaction-hpa"}
+        >=
+        kube_horizontalpodautoscaler_spec_max_replicas{horizontalpodautoscaler="transaction-hpa"}
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Transaction Service HPA at maximum replicas"
+        description: "HPA transaction-hpa has reached maximum replica count of {{ $value }}"
