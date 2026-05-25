@@ -1,0 +1,61 @@
+{
+  "title": "Logging Overview",
+  "uid": "logging-overview",
+  "tags": ["banking", "logs"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "panels": [
+    {
+      "title": "Error Log Rate by Service",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{
+        "expr": "sum(rate({namespace=\"banking\"} |= \"ERROR\" [5m])) by (app)",
+        "legendFormat": "{{app}}"
+      }]
+    },
+    {
+      "title": "Error Logs",
+      "type": "logs",
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 8},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{
+        "expr": "{namespace=\"banking\"} |= \"ERROR\"",
+        "legendFormat": ""
+      }]
+    },
+    {
+      "title": "Kafka Consumer Errors",
+      "type": "logs",
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 18},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{
+        "expr": "{namespace=\"banking\", app=\"kafka\"} |= \"ERROR\"",
+        "legendFormat": ""
+      }]
+    },
+    {
+      "title": "Slow Requests",
+      "type": "logs",
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 28},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{
+        "expr": "{namespace=\"banking\"} |~ \"slow|timeout|took [0-9]+ms\" | __error__=\"\"",
+        "legendFormat": ""
+      }]
+    },
+    {
+      "title": "All Banking Logs",
+      "type": "logs",
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 38},
+      "datasource": {"type": "loki", "uid": "loki"},
+      "targets": [{
+        "expr": "{namespace=\"banking\"}",
+        "legendFormat": ""
+      }]
+    }
+  ],
+  "refresh": "30s",
+  "time": {"from": "now-1h", "to": "now"}
+}
