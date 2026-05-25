@@ -1,0 +1,101 @@
+{
+  "title": "Business Metrics",
+  "uid": "business-metrics",
+  "tags": ["banking", "business"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "panels": [
+    {
+      "title": "Transaction Volume by Type",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{
+        "expr": "sum by (type) (rate(banking_transactions_total{status=\"SUCCESS\"}[5m]))",
+        "legendFormat": "{{type}}"
+      }]
+    },
+    {
+      "title": "Total Transactions Count",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [
+        {
+          "expr": "sum(banking_transactions_total{status=\"SUCCESS\", type=\"DEPOSIT\"})",
+          "legendFormat": "Deposits"
+        },
+        {
+          "expr": "sum(banking_transactions_total{status=\"SUCCESS\", type=\"WITHDRAW\"})",
+          "legendFormat": "Withdrawals"
+        },
+        {
+          "expr": "sum(banking_transactions_total{status=\"SUCCESS\", type=\"TRANSFER\"})",
+          "legendFormat": "Transfers"
+        }
+      ]
+    },
+    {
+      "title": "Total Value Transacted per Hour",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{
+        "expr": "sum by (type) (increase(banking_transaction_value_total[1h]))",
+        "legendFormat": "{{type}}"
+      }]
+    },
+    {
+      "title": "Total Value Transacted (All Time)",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{
+        "expr": "sum(banking_transaction_value_total)",
+        "legendFormat": "Total Value"
+      }]
+    },
+    {
+      "title": "Registered Users Over Time",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{
+        "expr": "sum(banking_users_registered_total)",
+        "legendFormat": "Registered Users"
+      }]
+    },
+    {
+      "title": "Total Registered Users",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{
+        "expr": "sum(banking_users_registered_total)",
+        "legendFormat": "Total Users"
+      }]
+    },
+    {
+      "title": "Active User Sessions",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{
+        "expr": "sum(banking_active_sessions)",
+        "legendFormat": "Active Sessions"
+      }]
+    },
+    {
+      "title": "Current Active Sessions",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "targets": [{
+        "expr": "sum(banking_active_sessions)",
+        "legendFormat": "Active Sessions"
+      }]
+    }
+  ],
+  "refresh": "30s",
+  "time": {"from": "now-1h", "to": "now"}
+}
