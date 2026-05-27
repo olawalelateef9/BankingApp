@@ -1,10 +1,30 @@
 import os
+import logging
+import json
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine, text
-# New imports for Prometheus
 from prometheus_client import Counter, make_asgi_app
+
+# JSON Logger setup
+class JSONFormatter(logging.Formatter):
+    def format(self, record):
+        log_data = {
+            "timestamp": self.formatTime(record),
+            "level": record.levelname,
+            "service": "user-service",
+            "logger": record.name,
+            "message": record.getMessage()
+        }
+        if record.exc_info:
+            log_data["exception"] = self.formatException(record.exc_info)
+        return json.dumps(log_data)
+
+handler = logging.StreamHandler()
+handler.setFormatter(JSONFormatter())
+logging.basicConfig(handlers=[handler], level=logging.INFO, force=True)
+logger = logging.getLogger(__name__)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
@@ -49,6 +69,7 @@ def health():
 
 @app.post("/users")
 def create_user(user: UserCreate):
+    logger.info(f"Creating user: {user.id}")
     with engine.begin() as conn:
         existing = conn.execute(
             text("SELECT id FROM users WHERE id = :id OR email = :email"),
@@ -56,6 +77,7 @@ def create_user(user: UserCreate):
         ).fetchone()
 
         if existing:
+            logger.warning(f"User already exists: {user.id}")
             raise HTTPException(status_code=400, detail="User ID or email already exists")
 
         conn.execute(
@@ -80,12 +102,14 @@ def create_user(user: UserCreate):
         
         # 3. Increment the counter after successful database insertion
         REGISTERED_USERS_COUNTER.inc()
+        logger.info(f"User created successfully: {user.id}")
 
     return {"message": "User created successfully", "user_id": user.id}
 
 
 @app.get("/users")
 def list_users():
+    logger.info("Listing all users")
     with engine.begin() as conn:
         rows = conn.execute(
             text(
