@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: transaction-service
-          image: olawale9/transaction-service:1.4
+          image: olawale9/transaction-service:1.5
           ports:
             - name: http
               containerPort: 8080
