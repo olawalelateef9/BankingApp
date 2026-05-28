@@ -60,6 +60,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -79,6 +82,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -128,6 +134,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -148,6 +157,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -166,6 +178,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -193,86 +208,12 @@
           "kind": "VizConfig",
           "spec": {
             "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "palette-classic"
-                },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 10,
-                  "gradientMode": "none",
-                  "hideFrom": {
-                    "legend": false,
-                    "tooltip": false,
-                    "viz": false
-                  },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 1,
-                  "pointSize": 5,
-                  "scaleDistribution": {
-                    "type": "linear"
-                  },
-                  "showPoints": "never",
-                  "showValues": false,
-                  "spanNulls": false,
-                  "stacking": {
-                    "group": "A",
-                    "mode": "none"
-                  },
-                  "thresholdsStyle": {
-                    "mode": "off"
-                  }
-                },
-                "decimals": 1,
-                "max": 1,
-                "min": 0,
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    },
-                    {
-                      "color": "red",
-                      "value": 80
-                    }
-                  ]
-                },
-                "unit": "percentunit"
-              },
+              "defaults": {},
               "overrides": []
             },
-            "options": {
-              "annotations": {
-                "clustering": -1,
-                "multiLane": false
-              },
-              "legend": {
-                "calcs": [
-                  "lastNotNull",
-                  "max"
-                ],
-                "displayMode": "list",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": {
-                "hideZeros": false,
-                "mode": "multi",
-                "sort": "none"
-              }
-            }
+            "options": {}
           },
-          "version": "13.0.1+security-01"
+          "version": ""
         }
       }
     },
@@ -288,6 +229,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -407,6 +351,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -557,6 +504,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -575,6 +525,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -694,6 +647,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -712,6 +668,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -730,6 +689,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -748,6 +710,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -766,6 +731,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -784,6 +752,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -903,6 +874,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -930,174 +904,12 @@
           "kind": "VizConfig",
           "spec": {
             "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "palette-classic"
-                },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 10,
-                  "gradientMode": "none",
-                  "hideFrom": {
-                    "legend": false,
-                    "tooltip": false,
-                    "viz": false
-                  },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 1,
-                  "pointSize": 5,
-                  "scaleDistribution": {
-                    "type": "linear"
-                  },
-                  "showPoints": "never",
-                  "showValues": false,
-                  "spanNulls": false,
-                  "stacking": {
-                    "group": "A",
-                    "mode": "none"
-                  },
-                  "thresholdsStyle": {
-                    "mode": "off"
-                  }
-                },
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    },
-                    {
-                      "color": "red",
-                      "value": 80
-                    }
-                  ]
-                },
-                "unit": "short"
-              },
-              "overrides": [
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "blocked"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#bf1b00",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "new"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#fce2de",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "runnable"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#7eb26d",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "terminated"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#511749",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "timed-waiting"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#c15c17",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "waiting"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#eab839",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                }
-              ]
+              "defaults": {},
+              "overrides": []
             },
-            "options": {
-              "annotations": {
-                "clustering": -1,
-                "multiLane": false
-              },
-              "legend": {
-                "calcs": [
-                  "lastNotNull",
-                  "max"
-                ],
-                "displayMode": "list",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": {
-                "hideZeros": false,
-                "mode": "multi",
-                "sort": "none"
-              }
-            }
+            "options": {}
           },
-          "version": "13.0.1+security-01"
+          "version": ""
         }
       }
     },
@@ -1113,6 +925,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1131,6 +946,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1149,6 +967,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1197,6 +1018,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1224,86 +1048,12 @@
           "kind": "VizConfig",
           "spec": {
             "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "palette-classic"
-                },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 10,
-                  "gradientMode": "none",
-                  "hideFrom": {
-                    "legend": false,
-                    "tooltip": false,
-                    "viz": false
-                  },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 1,
-                  "pointSize": 5,
-                  "scaleDistribution": {
-                    "type": "linear"
-                  },
-                  "showPoints": "never",
-                  "showValues": false,
-                  "spanNulls": false,
-                  "stacking": {
-                    "group": "A",
-                    "mode": "none"
-                  },
-                  "thresholdsStyle": {
-                    "mode": "off"
-                  }
-                },
-                "decimals": 1,
-                "max": 1,
-                "min": 0,
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    },
-                    {
-                      "color": "red",
-                      "value": 80
-                    }
-                  ]
-                },
-                "unit": "percentunit"
-              },
+              "defaults": {},
               "overrides": []
             },
-            "options": {
-              "annotations": {
-                "clustering": -1,
-                "multiLane": false
-              },
-              "legend": {
-                "calcs": [
-                  "lastNotNull",
-                  "max"
-                ],
-                "displayMode": "list",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": {
-                "hideZeros": false,
-                "mode": "multi",
-                "sort": "none"
-              }
-            }
+            "options": {}
           },
-          "version": "13.0.1+security-01"
+          "version": ""
         }
       }
     },
@@ -1319,6 +1069,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1339,6 +1092,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1358,6 +1114,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1479,6 +1238,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1500,6 +1262,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1519,6 +1284,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1640,6 +1408,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1660,6 +1431,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1679,6 +1453,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1800,6 +1577,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1821,6 +1601,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1842,6 +1625,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1893,6 +1679,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1913,6 +1702,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1933,6 +1725,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1952,6 +1747,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -1981,85 +1779,12 @@
           "kind": "VizConfig",
           "spec": {
             "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "palette-classic"
-                },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 10,
-                  "gradientMode": "none",
-                  "hideFrom": {
-                    "legend": false,
-                    "tooltip": false,
-                    "viz": false
-                  },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 1,
-                  "pointSize": 5,
-                  "scaleDistribution": {
-                    "type": "linear"
-                  },
-                  "showPoints": "never",
-                  "showValues": false,
-                  "spanNulls": false,
-                  "stacking": {
-                    "group": "A",
-                    "mode": "none"
-                  },
-                  "thresholdsStyle": {
-                    "mode": "off"
-                  }
-                },
-                "decimals": 0,
-                "min": 0,
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    },
-                    {
-                      "color": "red",
-                      "value": 80
-                    }
-                  ]
-                },
-                "unit": "short"
-              },
+              "defaults": {},
               "overrides": []
             },
-            "options": {
-              "annotations": {
-                "clustering": -1,
-                "multiLane": false
-              },
-              "legend": {
-                "calcs": [
-                  "lastNotNull",
-                  "max"
-                ],
-                "displayMode": "list",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": {
-                "hideZeros": false,
-                "mode": "multi",
-                "sort": "none"
-              }
-            }
+            "options": {}
           },
-          "version": "13.0.1+security-01"
+          "version": ""
         }
       }
     },
@@ -2075,6 +1800,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2125,6 +1853,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2176,6 +1907,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2196,6 +1930,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2225,86 +1962,12 @@
           "kind": "VizConfig",
           "spec": {
             "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "palette-classic"
-                },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 10,
-                  "gradientMode": "none",
-                  "hideFrom": {
-                    "legend": false,
-                    "tooltip": false,
-                    "viz": false
-                  },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 1,
-                  "pointSize": 5,
-                  "scaleDistribution": {
-                    "log": 10,
-                    "type": "log"
-                  },
-                  "showPoints": "never",
-                  "showValues": false,
-                  "spanNulls": false,
-                  "stacking": {
-                    "group": "A",
-                    "mode": "none"
-                  },
-                  "thresholdsStyle": {
-                    "mode": "off"
-                  }
-                },
-                "decimals": 0,
-                "min": 0,
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    },
-                    {
-                      "color": "red",
-                      "value": 80
-                    }
-                  ]
-                },
-                "unit": "short"
-              },
+              "defaults": {},
               "overrides": []
             },
-            "options": {
-              "annotations": {
-                "clustering": -1,
-                "multiLane": false
-              },
-              "legend": {
-                "calcs": [
-                  "lastNotNull",
-                  "max"
-                ],
-                "displayMode": "list",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": {
-                "hideZeros": false,
-                "mode": "multi",
-                "sort": "none"
-              }
-            }
+            "options": {}
           },
-          "version": "13.0.1+security-01"
+          "version": ""
         }
       }
     },
@@ -2320,6 +1983,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2415,6 +2081,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2515,6 +2184,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2625,6 +2297,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2646,6 +2321,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2667,6 +2345,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2718,6 +2399,9 @@
                 "spec": {
                   "hidden": true,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2738,6 +2422,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2756,6 +2443,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2774,6 +2464,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2894,6 +2587,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -2924,161 +2620,12 @@
           "kind": "VizConfig",
           "spec": {
             "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "palette-classic"
-                },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 10,
-                  "gradientMode": "none",
-                  "hideFrom": {
-                    "legend": false,
-                    "tooltip": false,
-                    "viz": false
-                  },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 1,
-                  "pointSize": 5,
-                  "scaleDistribution": {
-                    "type": "linear"
-                  },
-                  "showPoints": "never",
-                  "showValues": false,
-                  "spanNulls": false,
-                  "stacking": {
-                    "group": "A",
-                    "mode": "none"
-                  },
-                  "thresholdsStyle": {
-                    "mode": "off"
-                  }
-                },
-                "decimals": 0,
-                "min": 0,
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    },
-                    {
-                      "color": "red",
-                      "value": 80
-                    }
-                  ]
-                },
-                "unit": "opm"
-              },
-              "overrides": [
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "debug"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#1F78C1",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "error"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#BF1B00",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "info"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#508642",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "trace"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#6ED0E0",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "warn"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#EAB839",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                }
-              ]
+              "defaults": {},
+              "overrides": []
             },
-            "options": {
-              "annotations": {
-                "clustering": -1,
-                "multiLane": false
-              },
-              "legend": {
-                "calcs": [
-                  "lastNotNull",
-                  "max"
-                ],
-                "displayMode": "list",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": {
-                "hideZeros": false,
-                "mode": "multi",
-                "sort": "none"
-              }
-            }
+            "options": {}
           },
-          "version": "13.0.1+security-01"
+          "version": ""
         }
       }
     },
@@ -3094,6 +2641,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -3188,6 +2738,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -3208,6 +2761,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -3235,85 +2791,12 @@
           "kind": "VizConfig",
           "spec": {
             "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "palette-classic"
-                },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 10,
-                  "gradientMode": "none",
-                  "hideFrom": {
-                    "legend": false,
-                    "tooltip": false,
-                    "viz": false
-                  },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 1,
-                  "pointSize": 5,
-                  "scaleDistribution": {
-                    "type": "linear"
-                  },
-                  "showPoints": "never",
-                  "showValues": false,
-                  "spanNulls": false,
-                  "stacking": {
-                    "group": "A",
-                    "mode": "none"
-                  },
-                  "thresholdsStyle": {
-                    "mode": "off"
-                  }
-                },
-                "decimals": 1,
-                "min": 0,
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    },
-                    {
-                      "color": "red",
-                      "value": 80
-                    }
-                  ]
-                },
-                "unit": "short"
-              },
+              "defaults": {},
               "overrides": []
             },
-            "options": {
-              "annotations": {
-                "clustering": -1,
-                "multiLane": false
-              },
-              "legend": {
-                "calcs": [
-                  "lastNotNull",
-                  "max"
-                ],
-                "displayMode": "list",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": {
-                "hideZeros": false,
-                "mode": "multi",
-                "sort": "none"
-              }
-            }
+            "options": {}
           },
-          "version": "13.0.1+security-01"
+          "version": ""
         }
       }
     },
@@ -3329,6 +2812,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -3377,6 +2863,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -3396,6 +2885,9 @@
                 "spec": {
                   "hidden": false,
                   "query": {
+                    "datasource": {
+                      "name": "${DS_PROMETHEUS}"
+                    },
                     "group": "prometheus",
                     "kind": "DataQuery",
                     "spec": {
@@ -3978,6 +3470,9 @@
         "name": "application",
         "options": [],
         "query": {
+          "datasource": {
+            "name": "${DS_PROMETHEUS}"
+          },
           "group": "prometheus",
           "kind": "DataQuery",
           "spec": {
@@ -4007,6 +3502,9 @@
         "name": "instance",
         "options": [],
         "query": {
+          "datasource": {
+            "name": "${DS_PROMETHEUS}"
+          },
           "group": "prometheus",
           "kind": "DataQuery",
           "spec": {
@@ -4036,6 +3534,9 @@
         "name": "jvm_memory_pool_heap",
         "options": [],
         "query": {
+          "datasource": {
+            "name": "${DS_PROMETHEUS}"
+          },
           "group": "prometheus",
           "kind": "DataQuery",
           "spec": {
@@ -4065,6 +3566,9 @@
         "name": "jvm_memory_pool_nonheap",
         "options": [],
         "query": {
+          "datasource": {
+            "name": "${DS_PROMETHEUS}"
+          },
           "group": "prometheus",
           "kind": "DataQuery",
           "spec": {
@@ -4094,6 +3598,9 @@
         "name": "jvm_buffer_pool",
         "options": [],
         "query": {
+          "datasource": {
+            "name": "${DS_PROMETHEUS}"
+          },
           "group": "prometheus",
           "kind": "DataQuery",
           "spec": {
