@@ -1,0 +1,35 @@
+datadog:
+  apiKeyExistingSecret: datadog-secret
+  site: datadoghq.eu          # EU site — change to datadoghq.com if US
+  clusterName: techbleat-global-bank
+
+  # Enable logs
+  logs:
+    enabled: true
+    containerCollectAll: true
+
+  # Enable APM/tracing
+  apm:
+    portEnabled: true
+
+  # Enable process monitoring
+  processAgent:
+    enabled: true
+    processCollection: true
+
+  # Enable Kubernetes state metrics
+  kubeStateMetricsEnabled: true
+
+  # Collect all namespaces including banking
+  collectEvents: true
+
+  # Enable container monitoring
+  containerExclude: "name:datadog-agent"
+
+clusterAgent:
+  enabled: true
+  replicas: 1
+
+# Deploy agent on every node
+agents:
+  enabled: true
