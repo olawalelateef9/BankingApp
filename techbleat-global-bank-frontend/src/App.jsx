@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 
-const USER_API = "http://localhost:8000";
-const TX_API = "http://localhost:8080";
-const ACTIVITY_API = "http://localhost:8001";
+const USER_API = "https://techbleatglobalbank.duckdns.org/api/users";
+const TX_API = "https://techbleatglobalbank.duckdns.org/api/transactions";
+const ACTIVITY_API = "https://techbleatglobalbank.duckdns.org/api/activities";
 
 const currency = new Intl.NumberFormat("en-GB", {
   style: "currency",
