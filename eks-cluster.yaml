@@ -1,0 +1,37 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: techbleat-banking
+  region: eu-west-2
+  version: "1.32"
+
+availabilityZones:
+  - eu-west-2a
+  - eu-west-2b
+  - eu-west-2c
+
+managedNodeGroups:
+  - name: application-nodes
+    instanceType: t3.medium
+    minSize: 2
+    maxSize: 5
+    desiredCapacity: 2
+    labels:
+      node-role: application
+    availabilityZones:
+      - eu-west-2a
+      - eu-west-2b
+
+  - name: ingress-nodes
+    instanceType: t3.medium
+    minSize: 1
+    maxSize: 2
+    desiredCapacity: 1
+    labels:
+      node-role: ingress
+    availabilityZones:
+      - eu-west-2a
+
+iam:
+  withOIDC: true
