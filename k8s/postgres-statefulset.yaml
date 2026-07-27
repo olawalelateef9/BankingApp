@@ -35,8 +35,10 @@ spec:
         volumeMounts:
         - name: postgres-storage # This is where the actual database files live
           mountPath: /var/lib/postgresql/data
+          subPath: postgres-data
         - name: init-script # This is where the SQL script is injected
           mountPath: /docker-entrypoint-initdb.d
+          
       volumes:
       - name: init-script
         configMap:
