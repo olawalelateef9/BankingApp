@@ -57,7 +57,8 @@ Write-OK "kubeconfig updated"
 Write-Step "Labelling nodes..."
 Start-Sleep -Seconds 10
 
-$nodes = kubectl get nodes -o jsonpath='{.items[*].metadata.name}' | -split ' '
+$nodeOutput = kubectl get nodes -o jsonpath='{.items[*].metadata.name}'
+$nodes = $nodeOutput -split ' '
 $appNodes   = $nodes | Where-Object { $_ -match "192-168-(0|52)-" }
 $ingressNode = $nodes | Where-Object { $_ -match "192-168-29-" }
 
