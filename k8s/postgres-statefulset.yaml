@@ -45,6 +45,7 @@ spec:
   - metadata:
       name: postgres-storage
     spec:
+      storageClassName: gp2
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
