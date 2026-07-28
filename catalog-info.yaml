@@ -1,0 +1,115 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: techbleat-banking
+  description: Techbleat Global Bank microservices platform
+  tags:
+    - banking
+    - kubernetes
+    - microservices
+spec:
+  owner: platform-team
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: user-service
+  description: Authentication accounts and user profile management
+  annotations:
+    github.com/project-slug: olawalelateef9/BankingApp
+    backstage.io/kubernetes-id: user-service
+  tags:
+    - python
+    - fastapi
+    - banking
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: techbleat-banking
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: transaction-service
+  description: Financial transactions transfers and ledger
+  annotations:
+    github.com/project-slug: olawalelateef9/BankingApp
+    backstage.io/kubernetes-id: transaction-service
+  tags:
+    - java
+    - spring-boot
+    - banking
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: techbleat-banking
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: activity-service
+  description: Event consumer and activity feed via Kafka
+  annotations:
+    github.com/project-slug: olawalelateef9/BankingApp
+    backstage.io/kubernetes-id: activity-service
+  tags:
+    - python
+    - fastapi
+    - kafka
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: techbleat-banking
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: frontend
+  description: React banking dashboard
+  annotations:
+    github.com/project-slug: olawalelateef9/BankingApp
+  tags:
+    - react
+    - vite
+    - tailwindcss
+spec:
+  type: website
+  lifecycle: production
+  owner: platform-team
+  system: techbleat-banking
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: postgres
+  description: PostgreSQL database - system of record
+  annotations:
+    github.com/project-slug: olawalelateef9/BankingApp
+  tags:
+    - database
+    - postgresql
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: techbleat-banking
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: kafka
+  description: Async event backbone in KRaft mode
+  annotations:
+    github.com/project-slug: olawalelateef9/BankingApp
+  tags:
+    - messaging
+    - kafka
+    - events
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: techbleat-banking
