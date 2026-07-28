@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: banking
+  labels:
+    app: user-service
+    prometheus-monitoring: "true"
+  annotations:
+    prometheus.io/scrape: "true"  # useful for plain Prometheus; Operator will use ServiceMonitor
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "8000"
+spec:
+  type: ClusterIP
+  selector:
+    app: user-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8000
+      targetPort: 8000

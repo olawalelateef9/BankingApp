@@ -1,0 +1,32 @@
+﻿apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: banking-dev
+
+resources:
+  - ../../base
+
+namePrefix: dev-
+
+labels:
+  - pairs:
+      environment: dev
+    includeSelectors: false
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+    target:
+      kind: Deployment
+
+images:
+  - name: olawale9/bank-frontend
+    newTag: "1.3"
+  - name: olawale9/user-service
+    newTag: "1.2"
+  - name: olawale9/transaction-service
+    newTag: "1.1"
+  - name: olawale9/activity-service
+    newTag: "1.0"
