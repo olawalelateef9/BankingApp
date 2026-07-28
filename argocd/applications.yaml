@@ -1,0 +1,62 @@
+﻿apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: techbleat-banking-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/olawalelateef9/BankingApp.git
+    targetRevision: develop
+    path: k8s/overlays/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: banking-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: techbleat-banking-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/olawalelateef9/BankingApp.git
+    targetRevision: staging
+    path: k8s/overlays/staging
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: banking-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: techbleat-banking-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/olawalelateef9/BankingApp.git
+    targetRevision: main
+    path: k8s/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: banking-prod
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
