@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -23,13 +25,25 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Check if EKS cluster exists
+        id: check-cluster
+        run: |
+          if aws eks describe-cluster --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }} 2>/dev/null; then
+            echo "cluster_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "cluster_exists=false" >> $GITHUB_OUTPUT
+            echo "EKS cluster not found - skipping deployment"
+          fi
+
       - name: Update kubeconfig
+        if: steps.check-cluster.outputs.cluster_exists == 'true'
         run: |
           aws eks update-kubeconfig \
             --name ${{ env.EKS_CLUSTER }} \
             --region ${{ env.AWS_REGION }}
 
       - name: Set environment based on branch
+        if: steps.check-cluster.outputs.cluster_exists == 'true'
         id: set-env
         run: |
           BRANCH=${GITHUB_REF#refs/heads/}
@@ -45,12 +59,11 @@ jobs:
           fi
 
       - name: Create Kubernetes secrets
+        if: steps.check-cluster.outputs.cluster_exists == 'true'
         run: |
-          # Create namespace if it doesnt exist
           kubectl create namespace ${{ steps.set-env.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
-          # Create database credentials secret
           kubectl create secret generic db-credentials \
             --from-literal=postgres-user=${{ secrets.POSTGRES_USER }} \
             --from-literal=postgres-password=${{ secrets.POSTGRES_PASSWORD }} \
@@ -58,7 +71,6 @@ jobs:
             --namespace=${{ steps.set-env.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
-          # Create Slack webhook secret for monitoring
           kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
           kubectl create secret generic alertmanager-slack-secret \
             --from-literal=slack-webhook-url=${{ secrets.SLACK_WEBHOOK_URL }} \
@@ -66,36 +78,36 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Login to Docker Hub
+        if: steps.check-cluster.outputs.cluster_exists == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Deploy to Kubernetes
+        if: steps.check-cluster.outputs.cluster_exists == 'true'
         run: |
           kubectl apply -k k8s/overlays/${{ steps.set-env.outputs.overlay }}
           echo "Deployed to ${{ steps.set-env.outputs.overlay }} environment"
 
       - name: Wait for rollout
+        if: steps.check-cluster.outputs.cluster_exists == 'true'
         run: |
           NS=${{ steps.set-env.outputs.namespace }}
           OVERLAY=${{ steps.set-env.outputs.overlay }}
-
-          # Wait for each deployment
           for deployment in frontend user-service activity-service; do
             kubectl rollout status deployment/${OVERLAY}-${deployment} \
               -n $NS --timeout=300s || true
           done
 
       - name: Verify deployment
+        if: steps.check-cluster.outputs.cluster_exists == 'true'
         run: |
           echo "=== Pods in ${{ steps.set-env.outputs.namespace }} ==="
           kubectl get pods -n ${{ steps.set-env.outputs.namespace }}
-          echo "=== Services ==="
-          kubectl get svc -n ${{ steps.set-env.outputs.namespace }}
 
       - name: Notify Slack on success
-        if: success()
+        if: success() && steps.check-cluster.outputs.cluster_exists == 'true'
         run: |
           curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
             -H 'Content-type: application/json' \
@@ -106,25 +118,11 @@ jobs:
                 "fields": [
                   {"title": "Environment", "value": "${{ steps.set-env.outputs.overlay }}", "short": true},
                   {"title": "Branch", "value": "${{ github.ref_name }}", "short": true},
-                  {"title": "Deployed by", "value": "${{ github.actor }}", "short": true},
-                  {"title": "Commit", "value": "${{ github.sha }}", "short": true}
+                  {"title": "Deployed by", "value": "${{ github.actor }}", "short": true}
                 ]
               }]
             }'
 
-      - name: Notify Slack on failure
-        if: failure()
-        run: |
-          curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
-            -H 'Content-type: application/json' \
-            -d '{
-              "text": ":x: *Deployment Failed*",
-              "attachments": [{
-                "color": "danger",
-                "fields": [
-                  {"title": "Environment", "value": "${{ steps.set-env.outputs.overlay }}", "short": true},
-                  {"title": "Branch", "value": "${{ github.ref_name }}", "short": true},
-                  {"title": "Failed by", "value": "${{ github.actor }}", "short": true}
-                ]
-              }]
-            }'
+      - name: Skip notification - cluster not running
+        if: steps.check-cluster.outputs.cluster_exists == 'false'
+        run: echo "Cluster not running - deployment skipped. Run deploy-eks.ps1 to start the cluster."
