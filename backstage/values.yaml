@@ -1,0 +1,64 @@
+﻿backstage:
+  image:
+    registry: docker.io
+    repository: olawale9/techbleat-idp
+    tag: "1.1"
+
+  appConfig:
+    app:
+      title: Techbleat Global Bank IDP
+      baseUrl: http://localhost:7007
+
+    organization:
+      name: Techbleat Global Bank
+
+    backend:
+      baseUrl: http://localhost:7007
+      listen:
+        port: 7007
+      cors:
+        origin: http://localhost:7007
+        methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+        credentials: true
+      auth:
+        dangerouslyDisableDefaultAuthPolicy: true
+
+    integrations:
+      github:
+        - host: github.com
+          token: ${GITHUB_TOKEN}
+
+    catalog:
+      rules:
+        - allow: [Component, System, API, Resource, Location]
+      locations:
+        - type: url
+          target: https://github.com/olawalelateef9/BankingApp/blob/main/catalog-info.yaml
+          rules:
+            - allow: [Component, System, API]
+
+    auth:
+      providers:
+        guest: {}
+
+    permission:
+      enabled: false
+
+ingress:
+  enabled: true
+  className: nginx
+  host: backstage.techbleatglobalbank.duckdns.org
+
+postgresql:
+  enabled: true
+  auth:
+    password: backstagepass
+    username: backstage
+    database: backstage_plugin_catalog
+  primary:
+    persistence:
+      storageClass: gp2
+      size: 5Gi
+
+serviceAccount:
+  create: true
