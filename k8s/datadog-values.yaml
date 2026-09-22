@@ -1,16 +1,18 @@
 datadog:
   apiKeyExistingSecret: datadog-secret
-  site: datadoghq.eu          # EU site — change to datadoghq.com if US
+  site: uk1.datadoghq.com
   clusterName: techbleat-global-bank
 
   # Enable logs
   logs:
     enabled: true
     containerCollectAll: true
+    containerCollectUsingFiles: true  # More efficient — reads from files not docker socket
 
   # Enable APM/tracing
   apm:
     portEnabled: true
+    socketEnabled: true               # Added — Unix socket for lower latency traces
 
   # Enable process monitoring
   processAgent:
@@ -23,13 +25,67 @@ datadog:
   # Collect all namespaces including banking
   collectEvents: true
 
-  # Enable container monitoring
+  # Enable container monitoring — exclude only datadog itself
   containerExclude: "name:datadog-agent"
+  containerInclude: "kube_namespace:banking kube_namespace:monitoring kube_namespace:argocd"
+
+  # Enable OTLP ingestion (receives traces from OpenTelemetry/Jaeger)
+  otlp:
+    receiver:
+      protocols:
+        grpc:
+          enabled: true
+        http:
+          enabled: true
+
+  # Kubernetes labels as Datadog tags
+  podLabelsAsTags:
+    app: app
+    environment: env
+    version: version
+
+  # Kubernetes annotations as Datadog tags
+  podAnnotationsAsTags:
+    ad.datadoghq.com/tags: tags
+
+  # Enable live container monitoring
+  containerImageCollection:
+    enabled: true
+
+  # Enable orchestrator explorer (see full k8s object details in Datadog)
+  orchestratorExplorer:
+    enabled: true
+
+  # Enable NPM (Network Performance Monitoring)
+  networkMonitoring:
+    enabled: true
 
 clusterAgent:
   enabled: true
-  replicas: 1
+  replicas: 2                         # Changed from 1 — HA mode (2 recommended when admission controller enabled)
+  admissionController:
+    enabled: true                     # Auto-injects APM/log config into pods
+    mutateUnlabelled: false           # Only inject into pods with datadog annotations
 
-# Deploy agent on every node
+# Deploy agent on every node (DaemonSet)
 agents:
   enabled: true
+  tolerations:                        # Added — allows agent to run on tainted master nodes too
+    - operator: Exists
+
+# Enable Kubernetes state metrics core (newer replacement for kube-state-metrics)
+datadog-crds:
+  crds:
+    datadogMetrics: true
+
+# Resource limits — important on t3.medium nodes
+agents:
+  containers:
+    agent:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 256Mi
+        limits:
+          cpu: 400m
+          memory: 512Mi

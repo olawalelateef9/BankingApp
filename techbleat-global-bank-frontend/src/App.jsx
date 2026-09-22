@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 const USER_API = "https://techbleatglobalbank.duckdns.org/api/users";
 const TX_API = "https://techbleatglobalbank.duckdns.org/api/transactions";
 const ACTIVITY_API = "https://techbleatglobalbank.duckdns.org/api/activities";
+const SIGN_OUT_URL =
+  "/oauth2/sign_out?rd=https%3A%2F%2Ftechbleatglobalbank.duckdns.org%2F";
 
 const currency = new Intl.NumberFormat("en-GB", {
   style: "currency",
@@ -10,16 +12,15 @@ const currency = new Intl.NumberFormat("en-GB", {
 });
 
 export default function TechbleatGlobalBankCustomerApp() {
-  const [screen, setScreen] = useState("login");
+  const [screen, setScreen] = useState("dashboard");
   const [users, setUsers] = useState([]);
-  const [selectedUserId, setSelectedUserId] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "info", text: "" });
 
-  const [loginForm, setLoginForm] = useState({ userId: "" });
   const [registerForm, setRegisterForm] = useState({
     id: "",
     firstName: "",
@@ -32,11 +33,6 @@ export default function TechbleatGlobalBankCustomerApp() {
     toUserId: "",
     reference: "",
   });
-
-  const selectedUser = useMemo(
-    () => users.find((user) => user.id === selectedUserId) || null,
-    [users, selectedUserId],
-  );
 
   const spendingThisMonth = useMemo(() => {
     return transactions
@@ -57,13 +53,14 @@ export default function TechbleatGlobalBankCustomerApp() {
 
   useEffect(() => {
     void loadUsers();
+    void loadCurrentUser();
   }, []);
 
   useEffect(() => {
-    if (selectedUserId) {
-      void loadDashboard(selectedUserId);
+    if (currentUser?.id) {
+      void loadDashboard(currentUser.id);
     }
-  }, [selectedUserId]);
+  }, [currentUser?.id]);
 
   async function api(url, options = {}) {
     const response = await fetch(url, {
@@ -101,6 +98,15 @@ export default function TechbleatGlobalBankCustomerApp() {
     }
   }
 
+  async function loadCurrentUser() {
+    try {
+      const me = await api(`${USER_API}/me`);
+      setCurrentUser(me);
+    } catch (error) {
+      setMessage({ type: "error", text: error.message || "Unable to load current user" });
+    }
+  }
+
   async function loadDashboard(userId) {
     setLoading(true);
     try {
@@ -112,30 +118,11 @@ export default function TechbleatGlobalBankCustomerApp() {
       setBalance(Number(balanceRes.balance || 0));
       setTransactions(Array.isArray(transactionsRes) ? transactionsRes : []);
       setActivities(Array.isArray(activitiesRes) ? activitiesRes : []);
-      setMessage({ type: "success", text: `Loaded dashboard for ${userId}` });
     } catch (error) {
       setMessage({ type: "error", text: error.message || "Unable to load dashboard" });
     } finally {
       setLoading(false);
     }
-  }
-
-  async function handleLogin(event) {
-    event.preventDefault();
-    if (!loginForm.userId) {
-      setMessage({ type: "error", text: "Enter a user ID to continue." });
-      return;
-    }
-
-    const exists = users.some((user) => user.id === loginForm.userId);
-    if (!exists) {
-      setMessage({ type: "error", text: "User not found. Please register first." });
-      return;
-    }
-
-    setSelectedUserId(loginForm.userId);
-    setScreen("dashboard");
-    setMessage({ type: "success", text: `Welcome back, ${loginForm.userId}` });
   }
 
   async function handleRegister(event) {
@@ -158,9 +145,7 @@ export default function TechbleatGlobalBankCustomerApp() {
       });
       await loadUsers();
       setRegisterForm({ id: "", firstName: "", lastName: "", email: "" });
-      setLoginForm({ userId: payload.id });
-      setMessage({ type: "success", text: "Account created successfully. You can now sign in." });
-      setScreen("login");
+      setMessage({ type: "success", text: "Account created successfully." });
     } catch (error) {
       setMessage({ type: "error", text: error.message || "Registration failed" });
     }
@@ -168,8 +153,8 @@ export default function TechbleatGlobalBankCustomerApp() {
 
   async function handleTransfer(event) {
     event.preventDefault();
-    if (!selectedUserId) {
-      setMessage({ type: "error", text: "Please sign in first." });
+    if (!currentUser) {
+      setMessage({ type: "error", text: "Your profile hasn't loaded yet." });
       return;
     }
 
@@ -183,13 +168,13 @@ export default function TechbleatGlobalBankCustomerApp() {
       if (transferForm.type === "deposit") {
         await api(`${TX_API}/transactions/deposit`, {
           method: "POST",
-          headers: { "X-User-Id": selectedUserId, "Content-Type": "application/json" },
+          headers: { "X-User-Id": currentUser.id, "Content-Type": "application/json" },
           body: JSON.stringify({ amount }),
         });
       } else if (transferForm.type === "withdraw") {
         await api(`${TX_API}/transactions/withdraw`, {
           method: "POST",
-          headers: { "X-User-Id": selectedUserId, "Content-Type": "application/json" },
+          headers: { "X-User-Id": currentUser.id, "Content-Type": "application/json" },
           body: JSON.stringify({ amount }),
         });
       } else {
@@ -199,7 +184,7 @@ export default function TechbleatGlobalBankCustomerApp() {
         }
         await api(`${TX_API}/transactions/transfer`, {
           method: "POST",
-          headers: { "X-User-Id": selectedUserId, "Content-Type": "application/json" },
+          headers: { "X-User-Id": currentUser.id, "Content-Type": "application/json" },
           body: JSON.stringify({
             toUserId: transferForm.toUserId.trim(),
             amount,
@@ -208,7 +193,7 @@ export default function TechbleatGlobalBankCustomerApp() {
       }
 
       setTransferForm({ type: "deposit", amount: "", toUserId: "", reference: "" });
-      await loadDashboard(selectedUserId);
+      await loadDashboard(currentUser.id);
       setScreen("dashboard");
       setMessage({ type: "success", text: "Transaction completed successfully." });
     } catch (error) {
@@ -216,20 +201,10 @@ export default function TechbleatGlobalBankCustomerApp() {
     }
   }
 
-  function handleLogout() {
-    setSelectedUserId("");
-    setLoginForm({ userId: "" });
-    setTransactions([]);
-    setActivities([]);
-    setBalance(0);
-    setScreen("login");
-    setMessage({ type: "info", text: "You have been signed out." });
-  }
-
   const accounts = [
     {
       name: "Everyday Account",
-      number: selectedUser ? `•••• ${selectedUser.id.slice(-4).padStart(4, "0")}` : "•••• 2048",
+      number: currentUser ? `•••• ${currentUser.id.slice(-4).padStart(4, "0")}` : "•••• 2048",
       balance: currency.format(balance),
     },
     {
@@ -249,37 +224,21 @@ export default function TechbleatGlobalBankCustomerApp() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <TopNav
-          screen={screen}
-          setScreen={setScreen}
-          selectedUser={selectedUser}
-          onLogout={handleLogout}
-        />
+        <TopNav screen={screen} setScreen={setScreen} currentUser={currentUser} />
 
         {message.text ? <Banner message={message} /> : null}
-
-        {screen === "login" && (
-          <LoginScreen
-            loginForm={loginForm}
-            setLoginForm={setLoginForm}
-            onLogin={handleLogin}
-            onGoRegister={() => setScreen("register")}
-            users={users}
-          />
-        )}
 
         {screen === "register" && (
           <RegisterScreen
             registerForm={registerForm}
             setRegisterForm={setRegisterForm}
             onRegister={handleRegister}
-            onGoLogin={() => setScreen("login")}
           />
         )}
 
         {screen === "dashboard" && (
           <DashboardScreen
-            selectedUser={selectedUser}
+            currentUser={currentUser}
             accounts={accounts}
             balance={balance}
             quickActions={quickActions}
@@ -299,7 +258,7 @@ export default function TechbleatGlobalBankCustomerApp() {
 
         {screen === "transfer" && (
           <TransferScreen
-            selectedUser={selectedUser}
+            currentUser={currentUser}
             transferForm={transferForm}
             setTransferForm={setTransferForm}
             onSubmit={handleTransfer}
@@ -310,7 +269,7 @@ export default function TechbleatGlobalBankCustomerApp() {
 
         {screen === "report" && (
           <ReportScreen
-            selectedUser={selectedUser}
+            currentUser={currentUser}
             balance={balance}
             transactions={transactions}
             activities={activities}
@@ -324,8 +283,8 @@ export default function TechbleatGlobalBankCustomerApp() {
   );
 }
 
-function TopNav({ screen, setScreen, selectedUser, onLogout }) {
-  const nav = ["login", "register", "dashboard", "transfer", "report"];
+function TopNav({ screen, setScreen, currentUser }) {
+  const nav = ["dashboard", "register", "transfer", "report"];
 
   return (
     <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -347,20 +306,20 @@ function TopNav({ screen, setScreen, selectedUser, onLogout }) {
       </div>
 
       <div className="flex items-center gap-3">
-        {selectedUser ? (
+        {currentUser ? (
           <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">
-            Signed in as <span className="font-semibold text-white">{selectedUser.full_name}</span>
+            Signed in as{" "}
+            <span className="font-semibold text-white">
+              {currentUser.full_name || currentUser.email}
+            </span>
           </div>
         ) : null}
-        {selectedUser ? (
-          <button
-            type="button"
-            onClick={onLogout}
-            className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 hover:bg-white/10"
-          >
-            Logout
-          </button>
-        ) : null}
+        <a
+          href={SIGN_OUT_URL}
+          className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 hover:bg-white/10"
+        >
+          Sign out
+        </a>
       </div>
     </div>
   );
@@ -396,62 +355,7 @@ function Shell({ children, title, subtitle, aside }) {
   );
 }
 
-function LoginScreen({ loginForm, setLoginForm, onLogin, onGoRegister, users }) {
-  return (
-    <Shell
-      title="Welcome back"
-      subtitle="Sign in with a registered user ID to explore the customer banking experience."
-      aside={
-        <div className="flex h-full flex-col justify-between">
-          <div>
-            <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-cyan-400 to-blue-600 text-2xl font-bold text-slate-950 shadow-lg shadow-cyan-500/30">T</div>
-            <h2 className="mt-8 text-3xl font-semibold">Secure access to your money</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-300">
-              Check balances, move money, view activity and download reports from one elegant banking dashboard.
-            </p>
-          </div>
-          <div className="grid gap-4">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
-              Registered demo users: <span className="font-semibold">{users.length}</span>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
-              Use an ID from registration, such as <span className="font-semibold">user1</span>
-            </div>
-          </div>
-        </div>
-      }
-    >
-      <form className="space-y-5" onSubmit={onLogin}>
-        <FormField
-          label="User ID"
-          placeholder="Enter your user ID"
-          value={loginForm.userId}
-          onChange={(value) => setLoginForm({ userId: value })}
-        />
-        <div>
-          <label className="mb-2 block text-sm text-slate-300">Password</label>
-          <input
-            type="password"
-            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-white outline-none placeholder:text-slate-500"
-            placeholder="Demo mode only"
-            disabled
-          />
-        </div>
-        <button className="w-full rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-4 font-medium text-slate-950 shadow-lg shadow-cyan-500/25">
-          Sign In
-        </button>
-        <p className="text-center text-sm text-slate-400">
-          Need an account?{" "}
-          <button type="button" onClick={onGoRegister} className="text-cyan-300">
-            Create one now
-          </button>
-        </p>
-      </form>
-    </Shell>
-  );
-}
-
-function RegisterScreen({ registerForm, setRegisterForm, onRegister, onGoLogin }) {
+function RegisterScreen({ registerForm, setRegisterForm, onRegister }) {
   return (
     <Shell
       title="Create your account"
@@ -469,7 +373,7 @@ function RegisterScreen({ registerForm, setRegisterForm, onRegister, onGoLogin }
             {[
               "Fast account setup",
               "Creates user and account records",
-              "Ready for immediate sign-in",
+              "Ready for immediate use",
             ].map((item) => (
               <div key={item} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
                 {item}
@@ -517,19 +421,13 @@ function RegisterScreen({ registerForm, setRegisterForm, onRegister, onGoLogin }
         <button className="mt-6 w-full rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-4 font-medium text-slate-950 shadow-lg shadow-cyan-500/25">
           Open My Account
         </button>
-        <p className="mt-4 text-center text-sm text-slate-400">
-          Already registered?{" "}
-          <button type="button" onClick={onGoLogin} className="text-cyan-300">
-            Go to sign in
-          </button>
-        </p>
       </form>
     </Shell>
   );
 }
 
 function DashboardScreen({
-  selectedUser,
+  currentUser,
   accounts,
   balance,
   quickActions,
@@ -551,7 +449,7 @@ function DashboardScreen({
             <p className="text-sm uppercase tracking-[0.25em] text-cyan-300">Mobile & Web Banking</p>
             <h1 className="mt-1 text-3xl font-semibold">Techbleat Global Bank</h1>
             <p className="mt-2 text-sm text-slate-400">
-              {selectedUser ? `Welcome back, ${selectedUser.full_name}` : "Please sign in to view your dashboard."}
+              {currentUser ? `Welcome back, ${currentUser.full_name || currentUser.email}` : "Loading your profile…"}
             </p>
           </div>
         </div>
@@ -626,14 +524,14 @@ function DashboardScreen({
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.25em] text-cyan-200">Platinum Debit</p>
-                <p className="mt-8 text-2xl tracking-[0.3em] text-white">**** **** **** {selectedUser ? selectedUser.id.slice(-4).padStart(4, "0") : "2048"}</p>
+                <p className="mt-8 text-2xl tracking-[0.3em] text-white">**** **** **** {currentUser ? currentUser.id.slice(-4).padStart(4, "0") : "2048"}</p>
               </div>
               <div className="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200">Active</div>
             </div>
             <div className="mt-10 flex items-end justify-between">
               <div>
                 <p className="text-xs text-slate-300">Card Holder</p>
-                <p className="mt-1 font-medium">{selectedUser?.full_name || "Customer"}</p>
+                <p className="mt-1 font-medium">{currentUser?.full_name || currentUser?.email || "Customer"}</p>
               </div>
               <div>
                 <p className="text-xs text-slate-300">Valid Thru</p>
@@ -705,7 +603,7 @@ function DashboardScreen({
   );
 }
 
-function TransferScreen({ selectedUser, transferForm, setTransferForm, onSubmit, users, balance }) {
+function TransferScreen({ currentUser, transferForm, setTransferForm, onSubmit, users, balance }) {
   const transferModes = [
     { id: "deposit", label: "Deposit" },
     { id: "withdraw", label: "Withdraw" },
@@ -720,7 +618,7 @@ function TransferScreen({ selectedUser, transferForm, setTransferForm, onSubmit,
         <div className="space-y-5">
           <div className="rounded-[28px] border border-white/10 bg-white/5 p-6">
             <p className="text-sm text-slate-400">From</p>
-            <h3 className="mt-2 text-2xl font-semibold">{selectedUser?.full_name || "No user selected"}</h3>
+            <h3 className="mt-2 text-2xl font-semibold">{currentUser?.full_name || currentUser?.email || "Loading…"}</h3>
             <p className="mt-2 text-sm text-slate-300">Available: {currency.format(balance)}</p>
           </div>
           <div className="rounded-[28px] border border-emerald-400/20 bg-emerald-500/10 p-6">
@@ -763,7 +661,7 @@ function TransferScreen({ selectedUser, transferForm, setTransferForm, onSubmit,
             >
               <option value="">Select a beneficiary</option>
               {users
-                .filter((user) => user.id !== selectedUser?.id)
+                .filter((user) => user.id !== currentUser?.id)
                 .map((user) => (
                   <option key={user.id} value={user.id}>{user.full_name} ({user.id})</option>
                 ))}
@@ -797,7 +695,7 @@ function TransferScreen({ selectedUser, transferForm, setTransferForm, onSubmit,
   );
 }
 
-function ReportScreen({ selectedUser, balance, transactions, activities, moneyInThisMonth, spendingThisMonth, safeToSpend }) {
+function ReportScreen({ currentUser, balance, transactions, activities, moneyInThisMonth, spendingThisMonth, safeToSpend }) {
   const weeklyBars = buildWeeklyBars(transactions);
 
   return (
@@ -808,7 +706,7 @@ function ReportScreen({ selectedUser, balance, transactions, activities, moneyIn
         <div className="space-y-5">
           <div className="rounded-[28px] border border-white/10 bg-white/5 p-6">
             <p className="text-sm text-slate-400">Customer</p>
-            <h3 className="mt-2 text-3xl font-semibold">{selectedUser?.full_name || "No user selected"}</h3>
+            <h3 className="mt-2 text-3xl font-semibold">{currentUser?.full_name || currentUser?.email || "Loading…"}</h3>
             <p className="mt-3 text-sm text-slate-300">Live report snapshot from your local proof of concept.</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">

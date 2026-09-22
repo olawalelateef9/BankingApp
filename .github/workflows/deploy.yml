@@ -106,6 +106,14 @@ jobs:
           echo "=== Pods in ${{ steps.set-env.outputs.namespace }} ==="
           kubectl get pods -n ${{ steps.set-env.outputs.namespace }}
 
+      - name: Apply oauth2-proxy manifest
+        if: steps.check-cluster.outputs.cluster_exists == 'true'
+        run: kubectl apply -f k8s/base/oauth2-proxy.yaml
+
+      - name: Wait for oauth2-proxy rollout
+        if: steps.check-cluster.outputs.cluster_exists == 'true'
+        run: kubectl rollout status deployment/oauth2-proxy -n banking --timeout=120s
+
       - name: Notify Slack on success
         if: success() && steps.check-cluster.outputs.cluster_exists == 'true'
         run: |
