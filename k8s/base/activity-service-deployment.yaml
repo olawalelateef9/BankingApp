@@ -18,6 +18,9 @@ spec:
         image: olawale9/activity-service:1.0 
         ports:
         - containerPort: 8001
+        envFrom:
+        - configMapRef:
+            name: oidc-config
         env:
         - name: DATABASE_URL
           valueFrom:

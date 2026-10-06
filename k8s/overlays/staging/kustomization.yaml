@@ -6,8 +6,6 @@ namespace: banking-staging
 resources:
   - ../../base
 
-namePrefix: staging-
-
 labels:
   - pairs:
       environment: staging
@@ -20,20 +18,21 @@ patches:
         value: 2
     target:
       kind: Deployment
+  # Redis (oauth2-proxy sessions) and Kafka are single-instance stores
   - patch: |-
       - op: replace
         path: /spec/replicas
         value: 1
     target:
       kind: Deployment
-      name: oauth2-proxy
+      name: (redis|kafka)
 
 images:
   - name: olawale9/bank-frontend
-    newTag: "1.3"
+    newTag: "1.5"
   - name: olawale9/user-service
-    newTag: "1.2"
+    newTag: "1.3"
   - name: olawale9/transaction-service
-    newTag: "1.1"
+    newTag: "1.6"
   - name: olawale9/activity-service
-    newTag: "1.0"
+    newTag: "1.1"

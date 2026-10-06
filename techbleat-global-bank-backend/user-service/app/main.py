@@ -1,11 +1,13 @@
 import os
 import logging
 import json
-from fastapi import FastAPI, HTTPException
+from typing import Optional
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine, text
 from prometheus_client import Counter, make_asgi_app
+from app.auth import Caller, get_caller
 
 # JSON Logger setup
 class JSONFormatter(logging.Formatter):
@@ -67,8 +69,34 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/me")
+def get_me(caller: Optional[Caller] = Depends(get_caller)):
+    if caller is None:
+        raise HTTPException(status_code=401, detail="Authentication is not configured")
+
+    with engine.begin() as conn:
+        row = conn.execute(
+            text(
+                '''
+                SELECT id, full_name, email, created_at
+                FROM users
+                WHERE lower(email) = lower(:email)
+                '''
+            ),
+            {"email": caller.email},
+        ).mappings().first()
+
+    if not row:
+        raise HTTPException(status_code=404, detail="No bank account is registered for this login yet")
+    return dict(row)
+
+
 @app.post("/users")
-def create_user(user: UserCreate):
+def create_user(user: UserCreate, caller: Optional[Caller] = Depends(get_caller)):
+    # Customers can only register an account for their own login email
+    if caller and not caller.is_admin and user.email.lower() != caller.email.lower():
+        raise HTTPException(status_code=403, detail="You can only register an account for your own email")
+
     logger.info(f"Creating user: {user.id}")
     with engine.begin() as conn:
         existing = conn.execute(
@@ -108,7 +136,7 @@ def create_user(user: UserCreate):
 
 
 @app.get("/users")
-def list_users():
+def list_users(caller: Optional[Caller] = Depends(get_caller)):
     logger.info("Listing all users")
     with engine.begin() as conn:
         rows = conn.execute(

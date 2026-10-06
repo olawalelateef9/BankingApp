@@ -38,6 +38,9 @@ spec:
               port: 8080
             initialDelaySeconds: 90
             periodSeconds: 20
+          envFrom:
+            - configMapRef:
+                name: oidc-config
           env:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres-service:5432/bankingdb"

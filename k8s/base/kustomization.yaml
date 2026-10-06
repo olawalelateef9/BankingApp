@@ -15,5 +15,4 @@ resources:
   - activity-service-deployment.yaml
   - frontend-deployment.yaml
   - gateway-services.yaml
-  - oauth2-proxy.yaml
   - ingress.yaml

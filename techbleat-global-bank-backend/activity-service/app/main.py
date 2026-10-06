@@ -2,11 +2,14 @@ import json
 import os
 import threading
 import time
+from typing import Optional
 
 from confluent_kafka import Consumer
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, text
+
+from app.auth import Caller, get_caller, require_access
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:29092")
@@ -87,7 +90,8 @@ def health():
 
 
 @app.get("/activities/{user_id}")
-def get_activities(user_id: str):
+def get_activities(user_id: str, caller: Optional[Caller] = Depends(get_caller)):
+    require_access(caller, user_id, engine)
     with engine.begin() as conn:
         rows = conn.execute(
             text(

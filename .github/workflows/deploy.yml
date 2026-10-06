@@ -7,6 +7,10 @@ on:
 env:
   AWS_REGION: eu-west-2
   EKS_CLUSTER: techbleat-banking
+  OIDC_ISSUER: https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_wtq53RFPW
+  # Cognito login domain; oauth2-proxy may redirect here on sign-out
+  COGNITO_DOMAIN: eu-west-2wtq53rfpw.auth.eu-west-2.amazoncognito.com
+  OAUTH2_PROXY_CHART_VERSION: 10.7.1
 
 jobs:
   deploy:
@@ -50,12 +54,15 @@ jobs:
           if [ "$BRANCH" = "main" ]; then
             echo "overlay=prod" >> $GITHUB_OUTPUT
             echo "namespace=banking-prod" >> $GITHUB_OUTPUT
+            echo "oauth2_replicas=2" >> $GITHUB_OUTPUT
           elif [ "$BRANCH" = "staging" ]; then
             echo "overlay=staging" >> $GITHUB_OUTPUT
             echo "namespace=banking-staging" >> $GITHUB_OUTPUT
+            echo "oauth2_replicas=1" >> $GITHUB_OUTPUT
           else
             echo "overlay=dev" >> $GITHUB_OUTPUT
             echo "namespace=banking-dev" >> $GITHUB_OUTPUT
+            echo "oauth2_replicas=1" >> $GITHUB_OUTPUT
           fi
 
       - name: Create Kubernetes secrets
@@ -68,6 +75,22 @@ jobs:
             --from-literal=postgres-user=${{ secrets.POSTGRES_USER }} \
             --from-literal=postgres-password=${{ secrets.POSTGRES_PASSWORD }} \
             --from-literal=database-url=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres-service:5432/bankingdb \
+            --namespace=${{ steps.set-env.outputs.namespace }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          # OIDC (Cognito): oauth2-proxy credentials, plus the issuer/audience
+          # the backend services validate ID tokens against
+          kubectl create secret generic oauth2-proxy-secret \
+            --from-literal=client-id=${{ secrets.COGNITO_CLIENT_ID }} \
+            --from-literal=client-secret=${{ secrets.COGNITO_CLIENT_SECRET }} \
+            --from-literal=cookie-secret=${{ secrets.OAUTH2_PROXY_COOKIE_SECRET }} \
+            --namespace=${{ steps.set-env.outputs.namespace }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          kubectl create configmap oidc-config \
+            --from-literal=OIDC_ISSUER=${{ env.OIDC_ISSUER }} \
+            --from-literal=OIDC_AUDIENCE=${{ secrets.COGNITO_CLIENT_ID }} \
+            --from-literal=OIDC_ADMIN_GROUP=bank-admins \
             --namespace=${{ steps.set-env.outputs.namespace }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
@@ -94,9 +117,8 @@ jobs:
         if: steps.check-cluster.outputs.cluster_exists == 'true'
         run: |
           NS=${{ steps.set-env.outputs.namespace }}
-          OVERLAY=${{ steps.set-env.outputs.overlay }}
           for deployment in frontend user-service activity-service; do
-            kubectl rollout status deployment/${OVERLAY}-${deployment} \
+            kubectl rollout status deployment/${deployment} \
               -n $NS --timeout=300s || true
           done
 
@@ -106,13 +128,20 @@ jobs:
           echo "=== Pods in ${{ steps.set-env.outputs.namespace }} ==="
           kubectl get pods -n ${{ steps.set-env.outputs.namespace }}
 
-      - name: Apply oauth2-proxy manifest
+      - name: Deploy oauth2-proxy (Helm)
         if: steps.check-cluster.outputs.cluster_exists == 'true'
-        run: kubectl apply -f k8s/base/oauth2-proxy.yaml
-
-      - name: Wait for oauth2-proxy rollout
-        if: steps.check-cluster.outputs.cluster_exists == 'true'
-        run: kubectl rollout status deployment/oauth2-proxy -n banking --timeout=120s
+        run: |
+          helm repo add oauth2-proxy https://oauth2-proxy.github.io/manifests
+          helm repo update oauth2-proxy
+          helm upgrade --install oauth2-proxy oauth2-proxy/oauth2-proxy \
+            --version ${{ env.OAUTH2_PROXY_CHART_VERSION }} \
+            --namespace ${{ steps.set-env.outputs.namespace }} \
+            -f k8s/helm/oauth2-proxy-values.yaml \
+            --set extraArgs.oidc-issuer-url=${{ env.OIDC_ISSUER }} \
+            --set extraArgs.whitelist-domain=${{ env.COGNITO_DOMAIN }} \
+            --set sessionStorage.redis.standalone.connectionUrl=redis://redis-service:6379 \
+            --set replicaCount=${{ steps.set-env.outputs.oauth2_replicas }} \
+            --wait --timeout 3m
 
       - name: Notify Slack on success
         if: success() && steps.check-cluster.outputs.cluster_exists == 'true'

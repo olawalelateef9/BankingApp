@@ -3,8 +3,12 @@ import { useEffect, useMemo, useState } from "react";
 const USER_API = "https://techbleatglobalbank.duckdns.org/api/users";
 const TX_API = "https://techbleatglobalbank.duckdns.org/api/transactions";
 const ACTIVITY_API = "https://techbleatglobalbank.duckdns.org/api/activities";
-const SIGN_OUT_URL =
-  "/oauth2/sign_out?rd=https%3A%2F%2Ftechbleatglobalbank.duckdns.org%2F";
+// Ends the oauth2-proxy session, then the Cognito session, then returns home
+const COGNITO_LOGOUT_URL =
+  "https://eu-west-2wtq53rfpw.auth.eu-west-2.amazoncognito.com/logout" +
+  "?client_id=773vtdkbuqu0bmubvrh52i1p35" +
+  "&logout_uri=" + encodeURIComponent("https://techbleatglobalbank.duckdns.org/");
+const SIGN_OUT_URL = `/oauth2/sign_out?rd=${encodeURIComponent(COGNITO_LOGOUT_URL)}`;
 
 const currency = new Intl.NumberFormat("en-GB", {
   style: "currency",
@@ -70,6 +74,13 @@ export default function TechbleatGlobalBankCustomerApp() {
       },
       ...options,
     });
+
+    if (response.status === 401) {
+      // Session missing or expired: send the whole page through the login flow
+      const rd = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.assign(`/oauth2/start?rd=${rd}`);
+      return new Promise(() => {});
+    }
 
     if (!response.ok) {
       let errorText = "Request failed";

@@ -1,0 +1,52 @@
+# ============================================================
+# Techbleat Global Bank — oauth2-proxy Helm values
+# Chart: oauth2-proxy/oauth2-proxy (https://oauth2-proxy.github.io/manifests)
+#
+# Installed per environment by .github/workflows/deploy.yml (or
+# scripts/deploy-oauth2-proxy.sh). Per-environment values are passed
+# with --set: extraArgs.oidc-issuer-url, sessionStorage.redis.standalone.connectionUrl,
+# replicaCount.
+#
+# Runs in nginx auth_request mode: ingress-nginx calls /oauth2/auth for
+# every request (see k8s/base/ingress.yaml) and forwards the
+# Authorization header (the OIDC ID token) to the backend services,
+# which validate it themselves.
+# ============================================================
+
+config:
+  # Secret created by CI with keys client-id, client-secret, cookie-secret
+  existingSecret: oauth2-proxy-secret
+  cookieName: _techbleat_auth
+
+extraArgs:
+  provider: oidc
+  scope: "openid email profile"
+  email-domain: "*"
+  redirect-url: https://techbleatglobalbank.duckdns.org/oauth2/callback
+  cookie-domain: techbleatglobalbank.duckdns.org
+  cookie-secure: "true"
+  cookie-samesite: lax
+  skip-provider-button: "true"
+  silence-ping-logging: "true"
+  reverse-proxy: "true"
+  # Return X-Auth-Request-* and Authorization: Bearer <id_token> on /oauth2/auth
+  set-xauthrequest: "true"
+  set-authorization-header: "true"
+  pass-access-token: "true"
+
+# k8s/base/ingress.yaml routes /oauth2 to oauth2-proxy:4180
+service:
+  portNumber: 4180
+
+sessionStorage:
+  type: redis
+  redis:
+    clientType: standalone
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
